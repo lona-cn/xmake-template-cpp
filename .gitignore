@@ -1,0 +1,7 @@
+.xmake/
+.idea/
+.vscode/
+vsxmake*/
+build/
+build-*/
+cmake-build/
