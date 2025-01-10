@@ -1,15 +1,8 @@
 FROM debian:bookworm AS builder
-ARG XMAKE_VERSION="v2.9.7"
-# 定义代理环境变量
-ARG HTTP_PROXY
-ARG NO_PROXY=localhost,127.0.0.1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,.cn
-
-# 设置环境变量
-ENV HTTP_PROXY=${HTTP_PROXY}
-ENV HTTPS_PROXY=${HTTP_PROXY}
-ENV NO_PROXY=${NO_PROXY}
-ENV XMAKE_ROOT=y
-
+#参考构建命令
+#docker build --build-arg no_proxy=localhost,.cn,.gitee.com,.aliyun.com,.huaweicloud.com,127.0.0.1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12 \
+#    --build-arg http_proxy=http://192.168.1.1:8080 --build-arg https_proxy=http://192.168.1.1:8080 \
+#    -f docker/Dockerfile.debian-bookworm-x86_64 -t xmake-template-cpp:latest .
 RUN rm -rf /etc/apt/sources.list.d/debian.sources &&\
     printf 'deb http://mirrors.tuna.tsinghua.edu.cn/debian/ sid main contrib non-free non-free-firmware\ndeb http://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm main contrib non-free non-free-firmware\n' > /etc/apt/sources.list
 
@@ -21,6 +14,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt update &&\
 
 SHELL ["/bin/bash","-c"]
 #----##不要动## 安装xmake----
+ARG XMAKE_VERSION="v2.9.7"
+ARG XMAKE_ROOT=y
 RUN curl -fsSL https://xmake.io/shget.text | bash -s ${XMAKE_VERSION}
 #----##不要动## 安装依赖----
 RUN apt install -y libopencv-dev libssl-dev openssl python3.13-dev
