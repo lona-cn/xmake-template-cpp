@@ -54,8 +54,20 @@ function TargetAddTests(target_name --[[string]],base_dir --[[string]],group_nam
             if type(group_name) == "string" then               
                 set_group(group_name) 
             end
-            if is_add_deps then               
+            if is_add_deps then
                 add_deps(target_name) 
+            end
+            for _,private_dir_name in ipairs(private_dirs) do
+                local private_dir = path.join(base_dir,private_dir_name)
+                add_includedirs(private_dir, { public = false })
+                for _,header_suffix in ipairs(header_suffixes) do
+                    add_headerfiles(path.join(private_dir,"*."..header_suffix), { install = false })
+                end
+            end
+            local public_dir = path.join(base_dir)
+            add_includedirs(public_dir, { public = false })
+            for _,header_suffix in ipairs(header_suffixes) do
+                add_headerfiles(path.join(public_dir,"*."..header_suffix), { install = false })
             end
             add_files(path.join("test",test_target_filename))
             add_tests("default")
@@ -81,6 +93,7 @@ function CreateTarget(target_name --[[string]],kind --[[string]],base_dir --[[st
     target(target_name)
     set_kind(kind)
     set_group(group_name)
+    add_extrafiles(path.join(base_dir,"xmake.lua"))
     add_rules("auto_cp_deps_assets_configs_to_build")
     -- packages
     -- add packages here
