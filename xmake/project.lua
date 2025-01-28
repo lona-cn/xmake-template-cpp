@@ -7,8 +7,7 @@ function SetupProject()
 	set_fpmodels("fast")
 	-- basic
 	set_encodings("utf-8")
-	add_vectorexts("sse", "sse2", "sse3", "ssse3", "sse4.2", "f16c", "avx", "avx2")
-	-- add_vectorexts("all")
+	add_vectorexts("all")
 	if is_mode("release") then
 		set_optimize("fastest")
 		set_symbols("hidden")
@@ -16,7 +15,7 @@ function SetupProject()
 		set_strip("all")
 		add_defines("BUILD_RELEASE")
 		if is_plat("windows") then
-			set_runtimes("MD")
+			set_runtimes("MT")
 		end
 	elseif is_mode("debug") or is_mode("releasedbg") then
 		set_optimize("none")
@@ -52,7 +51,9 @@ function SetupProject()
 			add_defines("_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH")
 		end
 	elseif is_os("linux") then
-		add_cxxflags("-mf16c")
+		if is_arch("x86_64") then
+			add_cxxflags("-mf16c")
+		end
 		add_rpathdirs("./")
 		-- add_syslinks("c++")
 		-- add_cxxflags("-stdlib=libc++", {tools = "clang"})
@@ -60,10 +61,10 @@ function SetupProject()
 	end
 	set_version(project_semver, { build = "%Y%m%d%H%M" })
 	set_allowedplats("windows","linux")
-	set_allowedarchs("x64","x86_64","arm64")
+	set_allowedarchs("x64","x86_64","arm64","riscv64")
 	add_defines("EXPORTING_API")
 	add_rules("plugin.vsxmake.autoupdate")
 	set_allowedmodes("debug", "release", "releasedbg")
 	set_defaultmode("releasedbg")
-	set_defaultarchs("windows|x64","linux|x64")
+	set_defaultarchs("windows|x64","linux|x86_64")
 end
