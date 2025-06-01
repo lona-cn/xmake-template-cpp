@@ -9,7 +9,7 @@
 - `app/source/programs/demo`：可执行程序例子
 - `app/source/runtime/common`：静态库例子
 - `app/source/programs/demo/test`：可执行程序测试例子
-- `app/source/programs/commonx/test`：静态库程序测试例子
+- `app/source/runtime/common/test`：静态库程序测试例子
 `target`预设目录结构：
 - `$(targetdir)`：公共代码，可以有头文件和源文件，此处的头文件会被`install`和被依赖它的其他`target`所使用
 - `$(targetdir)/private`：私有代码，可以有头文件和源文件

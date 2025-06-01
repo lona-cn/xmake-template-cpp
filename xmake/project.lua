@@ -62,9 +62,10 @@ function SetupProject()
 	set_version(project_semver, { build = "%Y%m%d%H%M" })
 	set_allowedplats("windows","linux")
 	set_allowedarchs("x64","x86_64","arm64","riscv64")
-	add_defines("EXPORTING_API")
 	add_rules("plugin.vsxmake.autoupdate")
 	set_allowedmodes("debug", "release", "releasedbg")
 	set_defaultmode("releasedbg")
 	set_defaultarchs("windows|x64","linux|x86_64")
+	----global defines----
+	--add_defines("EXPORTING_API")
 end
