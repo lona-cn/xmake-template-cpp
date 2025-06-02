@@ -2,12 +2,16 @@ function SetupProject()
 	local project_semver = "0.0.1"
 	set_project("xmake-template-cpp")
 	-- language version
-	set_languages("clatest", "c++23")
+	set_languages("clatest", "cxx23")
 	-- compiler float mode
-	set_fpmodels("fast")
+	set_fpmodels("strict")
 	-- basic
 	set_encodings("utf-8")
-	add_vectorexts("all")
+	-- add_vectorexts("all")
+	add_vectorexts("mmx", "fma", "fma3")
+	add_vectorexts("avx", "avx2", "sha")
+	-- add_vectorexts("avx512")
+	add_vectorexts("sse", "sse2", "sse3", "ssse3", "sse4.2")
 	if is_mode("release") then
 		set_optimize("fastest")
 		set_symbols("hidden")
@@ -31,14 +35,14 @@ function SetupProject()
 	if is_os("windows") then
 		add_ldflags("/LTCG")
 		add_defines(
-				"_CRT_SECURE_NO_WARNINGS",
-				"_UNICODE",
-				"UNICODE",
-				"_CONSOLE",
-				"NOMINMAX",
-				"NOGDI",
-				"WIN32_LEAN_AND_MEAN",
-				"_WIN32_WINNT=0x0A00"
+			"_CRT_SECURE_NO_WARNINGS",
+			"_UNICODE",
+			"UNICODE",
+			"_CONSOLE",
+			"NOMINMAX",
+			"NOGDI",
+			"WIN32_LEAN_AND_MEAN",
+			"_WIN32_WINNT=0x0A00"
 		)
 		add_cxxflags("/d1trimfile:$(curdir)\\")
 		add_cxxflags("/experimental:deterministic")
@@ -60,12 +64,12 @@ function SetupProject()
 		-- add_cxxflags("-fexperimental-library", {tools = "clang"})
 	end
 	set_version(project_semver, { build = "%Y%m%d%H%M" })
-	set_allowedplats("windows","linux")
-	set_allowedarchs("x64","x86_64","arm64","riscv64")
+	set_allowedplats("windows", "linux")
+	set_allowedarchs("x64", "x86_64", "arm64", "riscv64")
 	add_rules("plugin.vsxmake.autoupdate")
 	set_allowedmodes("debug", "release", "releasedbg")
-	set_defaultmode("releasedbg")
-	set_defaultarchs("windows|x64","linux|x86_64")
+	set_defaultmode("debug")
+	set_defaultarchs("windows|x64", "linux|x86_64")
 	----global defines----
 	--add_defines("EXPORTING_API")
 end
