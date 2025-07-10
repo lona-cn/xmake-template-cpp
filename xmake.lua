@@ -1,2 +1,2 @@
-set_xmakever("2.9.7")
+set_xmakever("3.0.1")
 includes("xmake/setup.lua")

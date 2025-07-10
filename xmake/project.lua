@@ -1,6 +1,10 @@
 function SetupProject()
 	local project_semver = "0.0.1"
-	set_project("xmake-template-cpp")
+	local project_name = nil
+	if project_name == nil then
+		project_name = path.basename(os.projectdir())
+	end
+	set_project(project_name)
 	-- language version
 	set_languages("clatest", "cxx23")
 	-- compiler float mode
