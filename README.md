@@ -33,6 +33,7 @@
    - `app/config/base`：全平台配置文件
    - `app/config/$(plat)_$(arch)`：仅目标平台的配置文件
 - `app/source`：各种源代码
+   - `app/source/requires.lua`: 通过`add_requires`添加的第三方库
    - `app/source/programs`：可执行程序源代码
    - `app/source/runtime`：静态库、动态库、`headeronly`源代码
    - `app/source/third`：第三方库源代码

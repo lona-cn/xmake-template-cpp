@@ -2,9 +2,11 @@ IncludeSubDirs(os.scriptdir())
 
 -- runtime target
 target("runtime")
-    set_kind("static")
+    set_kind("object")
     set_group("runtime")
-    add_extrafiles(path.join(os.scriptdir(),"xmake.lua"))
+    add_extrafiles(path.join(os.scriptdir(),"xmake.lua"),
+        path.join(os.scriptdir(),"..","requires.lua")
+    )
     add_files("private/dummy.cpp")
     local deps = {"common"}
     for _,dep in ipairs(deps) do 

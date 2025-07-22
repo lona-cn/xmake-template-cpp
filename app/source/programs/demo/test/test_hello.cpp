@@ -1,5 +1,6 @@
 #include <cstdio>
 
-void main(){
+int main(){
     puts("hello test");
+    return 0;
 }
