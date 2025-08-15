@@ -1,3 +1,4 @@
+#pragma once
 #define VERSION "${VERSION}"
 #define VERSION_MINOR "${VERSION_MINOR}"
 #define VERSION_ALTER "${VERSION_ALTER}"
