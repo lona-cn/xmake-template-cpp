@@ -2,7 +2,7 @@ IncludeSubDirs(os.scriptdir())
 
 -- runtime target
 target("runtime")
-    set_kind("object")
+    set_kind("static")
     set_group("runtime")
     add_extrafiles(path.join(os.scriptdir(),"xmake.lua"),
         path.join(os.scriptdir(),"..","requires.lua")

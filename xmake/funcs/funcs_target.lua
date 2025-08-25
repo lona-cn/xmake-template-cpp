@@ -1,55 +1,72 @@
-local header_suffixes = { "h", "hpp" }
-local source_suffixes = { "cpp", "c" }
-local private_dirs = { "private" }
-local binary_dirs = { "bin", "lib" }
-local binary_suffixes = { "dll", "so" }
-local test_root_dirs = { "test" }
-local test_file_prefixes = { "test_" }
---local header_install_prefix = "xmake-template-cpp"
+local header_suffixes = {"h", "hpp"}
+local source_suffixes = {"cpp", "c"}
+local private_dirs = {"private"}
+local binary_dirs = {"bin", "lib"}
+local binary_suffixes = {"dll", "so"}
+local test_root_dirs = {"test"}
+local test_file_prefixes = {"test_"}
+-- local header_install_prefix = "xmake-template-cpp"
 
-function TargetAddHeaders(base_dir --[[string]])
+local function add_files_if_exists(base_dir, suffix)
+    local path_regex = path.join(base_dir, "*." .. suffix)
+    local files = os.files(path_regex)
+    if #files > 0 then add_files(path.join(base_dir, "*." .. suffix)) end
+end
+
+function TargetAddHeaders(base_dir --[[string]] )
     for _, private_dir_name in ipairs(private_dirs) do
         local private_dir = path.join(base_dir, private_dir_name)
-        add_includedirs(private_dir, { public = false })
+        add_includedirs(private_dir, {public = false})
         for _, header_suffix in ipairs(header_suffixes) do
-            add_headerfiles(path.join(private_dir, "*." .. header_suffix), { install = false })
+            add_headerfiles(path.join(private_dir, "*." .. header_suffix),
+                            {install = false})
         end
     end
     local public_dir = base_dir
-    add_includedirs(public_dir, { public = true })
+    add_includedirs(public_dir, {public = true})
     after_load(function(target)
         import("core.project.project")
         local header_install_prefix = project.name()
         for _, header_suffix in ipairs(header_suffixes) do
-            local relative_dir = path.relative(path.join(public_dir, "*." .. header_suffix), public_dir)
+            local relative_dir = path.relative(
+                                     path.join(public_dir, "*." .. header_suffix),
+                                     public_dir)
             if not header_install_prefix == "" then
-                target:add("headerfiles", relative_dir, { prefixdir = header_install_prefix, install = true })
+                target:add("headerfiles", relative_dir,
+                           {prefixdir = header_install_prefix, install = true})
             else
-                target:add("headerfiles", path.join(public_dir, "*." .. header_suffix), { install = true })
+                target:add("headerfiles",
+                           path.join(public_dir, "*." .. header_suffix),
+                           {install = true})
             end
         end
     end)
 end
 
-function TargetAddSources(base_dir --[[string]])
+function TargetAddSources(base_dir --[[string]] )
     for _, private_dir_name in ipairs(private_dirs) do
         local private_dir = path.join(base_dir, private_dir_name)
         for _, source_suffix in ipairs(source_suffixes) do
-            add_files(path.join(private_dir, "*." .. source_suffix))
+            --add_files(path.join(private_dir, "*." .. source_suffix))
+            add_files_if_exists(private_dir, source_suffix)
         end
     end
     for _, source_suffix in ipairs(source_suffixes) do
-        add_files(path.join(base_dir, "*." .. source_suffix))
+        --add_files(path.join(base_dir, "*." .. source_suffix))
+        add_files_if_exists(base_dir, source_suffix)
     end
 end
 
-function TargetAddTests(target_name --[[string]], base_dir --[[string]], group_name --[[string]], is_add_deps --[[bool]])
+function TargetAddTests(target_name --[[string]] , base_dir --[[string]] ,
+                        group_name --[[string]] , is_add_deps --[[bool]] )
     local test_file_patterns = {}
     for _, test_file_prefix in ipairs(test_file_prefixes) do
         for _, source_suffix in ipairs(source_suffixes) do
             for _, test_root_dir in ipairs(test_root_dirs) do
-                table.insert(test_file_patterns,
-                    path.join(test_root_dir, test_file_prefix .. "*." .. source_suffix))
+                table.insert(test_file_patterns, path.join(test_root_dir,
+                                                           test_file_prefix ..
+                                                               "*." ..
+                                                               source_suffix))
             end
         end
     end
@@ -59,23 +76,21 @@ function TargetAddTests(target_name --[[string]], base_dir --[[string]], group_n
         target(test_target_basename)
         set_kind("binary")
         set_default(false)
-        if type(group_name) == "string" then
-            set_group(group_name)
-        end
-        if is_add_deps then
-            add_deps(target_name)
-        end
+        if type(group_name) == "string" then set_group(group_name) end
+        if is_add_deps then add_deps(target_name) end
         for _, private_dir_name in ipairs(private_dirs) do
             local private_dir = path.join(base_dir, private_dir_name)
-            add_includedirs(private_dir, { public = false })
+            add_includedirs(private_dir, {public = false})
             for _, header_suffix in ipairs(header_suffixes) do
-                add_headerfiles(path.join(private_dir, "*." .. header_suffix), { install = false })
+                add_headerfiles(path.join(private_dir, "*." .. header_suffix),
+                                {install = false})
             end
         end
         local public_dir = path.join(base_dir)
-        add_includedirs(public_dir, { public = false })
+        add_includedirs(public_dir, {public = false})
         for _, header_suffix in ipairs(header_suffixes) do
-            add_headerfiles(path.join(public_dir, "*." .. header_suffix), { install = false })
+            add_headerfiles(path.join(public_dir, "*." .. header_suffix),
+                            {install = false})
         end
         add_files(path.join("test", test_target_filename))
         add_tests("default")
@@ -83,7 +98,8 @@ function TargetAddTests(target_name --[[string]], base_dir --[[string]], group_n
         after_load(function(target)
             local testing_target = target:dep(target_name)
             if testing_target then
-                local testing_target_options = testing_target:get("options") or {}
+                local testing_target_options =
+                    testing_target:get("options") or {}
                 target:add("options", table.unpack(testing_target_options))
             end
         end)
@@ -91,9 +107,9 @@ function TargetAddTests(target_name --[[string]], base_dir --[[string]], group_n
     end
 end
 
-function CreateTarget(target_name --[[string]], kind --[[string]], base_dir --[[string]]
-    , group_name --[[string]], pub_pkgs --[[table]], pub_deps --[[table]], syslinks --[[table]],
-                      cb_func --[[function]])
+function CreateTarget(target_name --[[string]] , kind --[[string]] , base_dir --[[string]] ,
+                      group_name --[[string]] , pub_pkgs --[[table]] , pub_deps --[[table]] ,
+                      syslinks --[[table]] , cb_func --[[function]] )
     local test_base_dir = path.join(base_dir, "test")
     local test_group_name = group_name .. "-tests"
     -- target
@@ -106,27 +122,22 @@ function CreateTarget(target_name --[[string]], kind --[[string]], base_dir --[[
     -- add packages here
     if type(pub_pkgs) == "table" then
         for _, pkg_name in ipairs(pub_pkgs) do
-            add_packages(pkg_name, { public = true })
+            add_packages(pkg_name, {public = true})
         end
     end
     -- add deps here
     if type(pub_deps) == "table" then
         for _, dep_name in ipairs(pub_deps) do
-            add_deps(dep_name, { inherit = true })
+            add_deps(dep_name, {inherit = true})
         end
     end
     TargetAddHeaders(base_dir)
     TargetAddSources(base_dir)
     -- links
     -- add links here
-    for _, syslib in ipairs(syslinks) do
-        add_syslinks(syslib)
-    end
-    if type(cb_func) == "function" then
-        cb_func()
-    end
+    for _, syslib in ipairs(syslinks) do add_syslinks(syslib) end
+    if type(cb_func) == "function" then cb_func() end
     target_end()
-
 
     -- tests
     if string.find(kind, "binary") then

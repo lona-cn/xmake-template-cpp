@@ -1,14 +1,14 @@
 local target_name = "common"
-local kind = "object"
+local kind = "static"
 local group_name = "runtime"
 local pkgs = {}
 local deps = {}
 local syslinks = {}
 local function callback()
-    set_configdir("$(buildir)/config")
-    add_includedirs("$(buildir)/config", { public = true })
-    add_headerfiles("$(buildir)/config/config.h",
-        "$(buildir)/config/export.h")
+    set_configdir("$(builddir)/config")
+    add_includedirs("$(builddir)/config", { public = true })
+    add_headerfiles("$(builddir)/config/config.h",
+        "$(builddir)/config/export.h")
     add_configfiles("config.h.in", "export.h.in")
     add_extrafiles("config.h.in", "export.h.in")
 
